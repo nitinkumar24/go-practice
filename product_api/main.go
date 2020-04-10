@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"go-practice/handlers"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"product_api/handlers"
 	"time"
 )
 

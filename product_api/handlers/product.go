@@ -3,9 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"go-practice/data"
 	"log"
 	"net/http"
+	"product_api/data"
 	"strconv"
 )
 

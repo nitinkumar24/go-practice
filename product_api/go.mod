@@ -1,4 +1,4 @@
-module go-practice
+module product_api
 
 go 1.13
 

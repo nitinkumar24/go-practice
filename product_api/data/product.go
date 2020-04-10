@@ -41,7 +41,7 @@ func UpdateProduct(id int, p *Product) error {
 }
 
 func findProduct(id int) (*Product, int, error) {
-	for i, p := range productList{
+	for i, p := range productList {
 		if p.ID == id {
 			return p, i, nil
 		}
