@@ -12,15 +12,12 @@ import (
 
 func main()  {
 	l := log.New(os.Stdout, "go-practice", log.LstdFlags)
-	hh := handlers.NewHello(l)
-	gh := handlers.NewGoodBye(l)
 
-	ph := handlers.NewProducts(l)
+	productHandler := handlers.NewProducts(l)
 
 	sm := http.NewServeMux()
-	sm.Handle("/", hh)
-	sm.Handle("/goodbye", gh)
-	sm.Handle("/products", ph)
+	sm.Handle("/", productHandler)
+
 
 	s := &http.Server{
 		Addr: ":9090",
