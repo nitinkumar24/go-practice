@@ -1,6 +1,10 @@
 package data
 
-import "time"
+import (
+	"encoding/json"
+	"io"
+	"time"
+)
 
 type Product struct {
 	ID int					`json:"id"`
@@ -11,6 +15,21 @@ type Product struct {
 	CreatedOn string
 	UpdatedOn string
 	DeletedOn string
+}
+
+func (p *Product) FromJSON(r io.Reader) error {
+	e := json.NewDecoder(r)
+	return e.Decode(p)
+}
+
+func AddProduct(p *Product) {
+	p.ID =  genNextID()
+	productList = append(productList, p)
+}
+
+func genNextID()  int{
+	lastProduct := productList[len(productList)-1]
+	return lastProduct.ID + 1
 }
 
 func GetProducts() [] *Product {
