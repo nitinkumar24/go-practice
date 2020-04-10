@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"go-practice/data"
 	"log"
 	"net/http"
-	"regexp"
 	"strconv"
 )
 
@@ -17,7 +17,7 @@ func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
 }
 
-func (p *Products) addProduct(writer http.ResponseWriter, request *http.Request)  {
+func (p *Products) AddProduct(writer http.ResponseWriter, request *http.Request)  {
 	p.l.Println("handle post")
 	prod := &data.Product{}
 	err :=  prod.FromJSON(request.Body)
@@ -28,7 +28,7 @@ func (p *Products) addProduct(writer http.ResponseWriter, request *http.Request)
 	p.l.Printf("body: %#v\n", prod)
 }
 
-func (p *Products) getProducts(writer http.ResponseWriter, request *http.Request)  {
+func (p *Products) GetProducts(writer http.ResponseWriter, request *http.Request)  {
 	products := data.GetProducts()
 	d, err := json.Marshal(products)
 	if err != nil {
@@ -37,42 +37,15 @@ func (p *Products) getProducts(writer http.ResponseWriter, request *http.Request
 	writer.Write(d)
 }
 
-func (p *Products) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if request.Method == http.MethodGet {
-		p.getProducts(writer, request)
-		return
+func (p *Products) UpdateProduct(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(writer, "enable to parse id", http.StatusBadRequest)
 	}
-
-	if request.Method == http.MethodPost {
-		p.addProduct(writer,  request)
-		return
-	}
-
-	if request.Method == http.MethodPut {
-		p.l.Println("method put", request.URL.Path)
-		path := request.URL.Path
-		r := regexp.MustCompile(`/([0-9]+)`)
-		group := r.FindAllStringSubmatch(path, -1)
-		if len(group) !=1 {
-			http.Error(writer, "not found", http.StatusBadRequest)
-		}
-		if len(group[0]) !=1 {
-			http.Error(writer, "not found", http.StatusBadRequest)
-		}
-
-		idString  := group[0][1]
-		id, _ := strconv.Atoi(idString)
-		p.l.Println("id",  id)
-		p.updateProduct(writer, request, id)
-		return
-	}
-	writer.WriteHeader(http.StatusMethodNotAllowed)
-}
-
-func (p *Products) updateProduct(writer http.ResponseWriter, request *http.Request, id int) {
-	p.l.Println("handle put")
+	p.l.Println("handle put", id)
 	prod := &data.Product{}
-	err :=  prod.FromJSON(request.Body)
+	err =  prod.FromJSON(request.Body)
 	if err !=  nil {
 		http.Error(writer, "unable to  decode", http.StatusInternalServerError)
 	}
