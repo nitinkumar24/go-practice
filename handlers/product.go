@@ -15,11 +15,16 @@ func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
 }
 
-func (p *Products) ServeHTTP(writer http.ResponseWriter, r *http.Request) {
-	products := data.GetProducts()
-	data, err := json.Marshal(products)
-	if err != nil {
-		http.Error(writer, "unable to marshal json", http.StatusInternalServerError)
+func (p *Products) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	if request.Method == http.MethodGet {
+		products := data.GetProducts()
+		d, err := json.Marshal(products)
+		if err != nil {
+			http.Error(writer, "unable to marshal json", http.StatusInternalServerError)
+		}
+		writer.Write(d)
 	}
-	writer.Write(data)
+
+	writer.WriteHeader(http.StatusMethodNotAllowed)
+
 }
