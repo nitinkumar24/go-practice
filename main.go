@@ -1,26 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
+	"go-practice/handlers"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main()  {
-	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		log.Println("hello world")
-		d, err := ioutil.ReadAll(request.Body)
-		if err != nil {
-			http.Error(writer, "oops", http.StatusBadRequest)
-			return
-		}
-		fmt.Fprintf(writer, "Hello %s\n", d)
-	})
+	l := log.New(os.Stdout, "go-practice", log.LstdFlags)
+	hh := handlers.NewHello(l)
+	gh := handlers.NewGoodBye(l)
 
-	http.HandleFunc("/goodBye", func(writer http.ResponseWriter, request *http.Request) {
-		log.Println("good bye")
-	})
+	sm := http.NewServeMux()
+	sm.Handle("/", hh)
+	sm.Handle("/goodbye", gh)
 
-	http.ListenAndServe(":9090", nil)
+	http.ListenAndServe(":9090", sm)
 }
